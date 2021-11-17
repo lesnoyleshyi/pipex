@@ -15,6 +15,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <fcntl.h>
 void	ft_check_rights(char *arg);
 void	ft_free_array(char **array);
 void	ft_perror_and_exit(const char *message);

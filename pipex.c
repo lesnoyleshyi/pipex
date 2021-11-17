@@ -15,92 +15,41 @@
 
 int	main(int argc, char *argv[])
 {
-	char *error_msg;
-
-	ft_check_args(argc, char *argv[]));
-
-
-}
-
-void	ft_check_args(int argc, char **argv)
-{
-	int	i;
+	pid_t	cp_switch;
+	int		fds[2];
 
 	if (argc != 5)
-		ft_pmessage_and_exit("Wrong arguments count\n", 2);
-	if (access(argv[1], R_OK) == -1)
-		ft_perror_and_exit("Program exit with message");
-	i = 2;
-	while (i < argc)
-		ft_check_rights(argv[i++]);
-}
-
-void	ft_check_rights(char *arg, char *envp[])
-{
-	int		i;
-	char	**paths;
-	char	*path_to_check;
-
-	path_to_check = ft_strjoin("/bin/", arg);
-	if (access(path_to_check, X_OK) == 0)
+		ft_pmessage_and_exit("Wrong arguments count\n");
+	pipe(fds);
+	cp_switch = fork();
+	if (cp_switch == -1)
+		ft_perror_and_exit("Unable to fork");
+	if (cp_switch == 0)
 	{
-		free(path_to_check);
-		return ;
+		close(fds[0]);
+		fd_src_file = open(argv[1], O_RDONLY);
+		dup2(fd_src_file, 0);
+		dup2(fds[1], 1);
+		execve("path_to_cmd1", "array_of_parameters", envp);
+		return (0);
+//		make_child_program;
+//		дочерний процесс читает из файла1,
+//		исполняет программу команда1 и
+//		пишет вывод команды1 в трубу
 	}
-	paths = ft_get_paths(envp);
-	if (!paths)
-		ft_pmessage_and_exit("command not found, exit");
-	i = 0;
-	while (paths[i])
+	else
 	{
-		path_to_check = ft_strjoin(paths[i++], arg);
-		if (access(path_to_check, X_OK) == 0)
-		{
-			free(path_to_check);
-			ft_free_array(paths);
-			return	;
-		}
-		free(path_to_check);
+		if (wait() == -1)
+			ft_perror_and_exit("Error in child process");
+		close(fds[1]);
+		fd_dst_file = open(argv[4], O_WRONLY | O_CREAT, 0644);
+		dup2(fds[0], 0);
+		dup2(fd_dst_file, 1);
+		execve("path_to_cmd2", "array_of_parameters", enpv);
+//		make_parent_program;
+//		родительский процесс читает из трубы,
+//		выполняет программу команда2 и
+//		пишет вывод команды2 в файл2
 	}
-	free(paths);
-	ft_perror_and_exit("Program exit with message");
-}
-
-void	ft_perror_and_exit(const char *message)
-{
-	perror(message);
-	exit(-1);
-}
-
-void	ft_pmessage_and_exit(const char *message)
-{
-	ft_putstr_fd(message, 2);
-	exit(-1);
-}
-
-char	**ft_get_paths(char *envp[])
-{
-	int 	i;
-	char	**paths;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strnstr(envp[i], "PATH=", 1000))
-		{
-			paths = ft_split((envp[i++]) + 5, ':');
-			break ;
-		}
-	}
-	return (paths);
-}
-
-void	ft_free_array(char **array)
-{
-	int	i;
-
-	i = 0;
-	while (array[i])
-		free(array[i++]);
-	free(array);
+	return (0);
 }
