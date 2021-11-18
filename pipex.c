@@ -44,18 +44,27 @@ int	main(int argc, char *argv[])
 
 void	ft_write_to_pipe_from_infile(int *fds, char *argv[])
 {
-	int	src_file_fd;
+	int		src_file_fd;
+	char	*path_to_cmd1;
+	char	**params_for_execve;
 
 	if (close(fds[0]) == -1)
 		ft_perror_and_exit("Can't close pipes output");
 	src_file_fd = open(argv[1], O_RDONLY);
 	if (src_file_fd == -1)
 		ft_perror_and_exit("Can't open input file");
-	if (dup2(src_file_fd, 0) == -1)
-		ft_perror_and_exit("Can't turn STDIN to input file");
-	if (dup2(fds[1], 1) == -1)
-		ft_perror_and_exit("Can't turn STDOUT to pipes input");
-	execve("path_to_cmd1", "array_of_parameters", envp);
+	if (dup2(src_file_fd, 0) == -1 || dup2(fds[1], 1) == -1)
+		ft_perror_and_exit("Can't turn STDIN to infile or STDOUT to pipes inp");
+	path_to_cmd1 = ft_get_path(argv[2]);
+	params_for_execve = ft_get_params(argv[2]);
+	if (execve(path_to_cmd1, params_for_execve, envp) == -1)
+	{
+		free(path_to_cmd1);
+		ft_free_array(params_for_execve);
+		ft_perror_and_exit("Error executing cmd1");
+	}
+	free(path_to_cmd1);
+	ft_free_array(params_for_execve);
 	if (close(src_file_fd) == -1)
 		ft_perror_and_exit("Can't close source files");
 	exit(EXIT_SUCCESS);
@@ -63,7 +72,9 @@ void	ft_write_to_pipe_from_infile(int *fds, char *argv[])
 
 void	ft_read_from_pipe_to_outfile(int *fds, char *argv[])
 {
-	int	dst_file_fd;
+	int		dst_file_fd;
+	char	*path_to_cmd2;
+	char	**params_for_execve;
 
 	if (close(fds[1]) == -1)
 		ft_perror_and_exit("Can't close pipes input");
@@ -74,5 +85,14 @@ void	ft_read_from_pipe_to_outfile(int *fds, char *argv[])
 		ft_perror_and_exit("Can't turn STDIN to pipes output");
 	if (dup2(dst_file_fd, 1) == -1)
 		ft_perror_and_exit("Can't turn STDOUT to output file");
-	execve("path_to_cmd2", "array_of_parameters", enpv);
+	path_to_cmd2 = ft_get_path(argv[3]);
+	params_for_execve = ft_get_params(argv[3]);
+	if (execve("path_to_cmd2", "array_of_parameters", enpv) == -1)
+	{
+		free(path_to_cmd2);
+		ft_free_array(params_for_execve);
+		ft_perror_and_exit("Error executing cmd2");
+	}
+	free(path_to_cmd2);
+	ft_free_array(params_for_execve);
 }

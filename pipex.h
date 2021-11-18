@@ -21,5 +21,5 @@ void	ft_free_array(char **array);
 void	ft_perror_and_exit(const char *message);
 void	ft_pmessage_and_exit(const char *message);
 int		ft_check_args(int argc, char **argv);
-char	**ft_get_paths(char *envp[]);
+char	**ft_get_directories(char *envp[]);
 #endif

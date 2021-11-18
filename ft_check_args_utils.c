@@ -56,7 +56,7 @@ void	ft_pmessage_and_exit(const char *message)
 	exit(EXIT_FAILURE);
 }
 
-char	**ft_get_paths(char *envp[])
+char	**ft_get_directories(char *envp[])
 {
 	int 	i;
 	char	**paths;
