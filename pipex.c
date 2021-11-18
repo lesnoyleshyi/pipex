@@ -17,6 +17,7 @@ int	main(int argc, char *argv[])
 {
 	pid_t	cp_switch;
 	int		fds[2];
+	int		status;
 
 	if (argc != 5)
 		ft_pmessage_and_exit("Wrong arguments count\n");
@@ -25,31 +26,53 @@ int	main(int argc, char *argv[])
 	if (cp_switch == -1)
 		ft_perror_and_exit("Unable to fork");
 	if (cp_switch == 0)
-	{
-		close(fds[0]);
-		fd_src_file = open(argv[1], O_RDONLY);
-		dup2(fd_src_file, 0);
-		dup2(fds[1], 1);
-		execve("path_to_cmd1", "array_of_parameters", envp);
-		return (0);
-//		make_child_program;
-//		дочерний процесс читает из файла1,
-//		исполняет программу команда1 и
-//		пишет вывод команды1 в трубу
-	}
+		ft_write_to_pipe_from_infile(fds, argv);
 	else
 	{
-		if (wait() == -1)
-			ft_perror_and_exit("Error in child process");
-		close(fds[1]);
-		fd_dst_file = open(argv[4], O_WRONLY | O_CREAT, 0644);
-		dup2(fds[0], 0);
-		dup2(fd_dst_file, 1);
-		execve("path_to_cmd2", "array_of_parameters", enpv);
-//		make_parent_program;
-//		родительский процесс читает из трубы,
-//		выполняет программу команда2 и
-//		пишет вывод команды2 в файл2
+		if (wait(&status) == -1)
+			ft_perror_and_exit("Error closing child process");
+		if (!WIFEXITED(status))
+			ft_perror_and_exit("Error in child process")
+		ft_read_from_pipe_to_outfile(fds, argv);
 	}
+	if (close(fds[1]) == -1)
+		ft_perror_and_exit("Can't close pipes input");
+	if (close(fds[0]) == -1)
+		ft_perror_and_exit("Can't close pipes output");
 	return (0);
+}
+
+void	ft_write_to_pipe_from_infile(int *fds, char *argv[])
+{
+	int	src_file_fd;
+
+	if (close(fds[0]) == -1)
+		ft_perror_and_exit("Can't close pipes output");
+	src_file_fd = open(argv[1], O_RDONLY);
+	if (src_file_fd == -1)
+		ft_perror_and_exit("Can't open input file");
+	if (dup2(src_file_fd, 0) == -1)
+		ft_perror_and_exit("Can't turn STDIN to input file");
+	if (dup2(fds[1], 1) == -1)
+		ft_perror_and_exit("Can't turn STDOUT to pipes input");
+	execve("path_to_cmd1", "array_of_parameters", envp);
+	if (close(src_file_fd) == -1)
+		ft_perror_and_exit("Can't close source files");
+	exit(EXIT_SUCCESS);
+}
+
+void	ft_read_from_pipe_to_outfile(int *fds, char *argv[])
+{
+	int	dst_file_fd;
+
+	if (close(fds[1]) == -1)
+		ft_perror_and_exit("Can't close pipes input");
+	dst_file_fd = open(argv[4], O_WRONLY | O_CREAT, 0644);
+	if (dst_file_fd == -1)
+		ft_perror_and_exit("Can't open or create output file");
+	if (dup2(fds[0], 0) == -1)
+		ft_perror_and_exit("Can't turn STDIN to pipes output");
+	if (dup2(dst_file_fd, 1) == -1)
+		ft_perror_and_exit("Can't turn STDOUT to output file");
+	execve("path_to_cmd2", "array_of_parameters", enpv);
 }

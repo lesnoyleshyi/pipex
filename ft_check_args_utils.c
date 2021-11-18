@@ -47,13 +47,13 @@ void	ft_check_rights(char *arg, char *envp[])
 void	ft_perror_and_exit(const char *message)
 {
 	perror(message);
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 void	ft_pmessage_and_exit(const char *message)
 {
 	ft_putstr_fd(message, 2);
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 char	**ft_get_paths(char *envp[])
