@@ -52,7 +52,7 @@ void	ft_write_to_pipe_from_infile(int *fds, char *argv[], char *envp[])
 	src_file_fd = open(argv[1], O_RDONLY);
 	if (src_file_fd == -1)
 		ft_perror_and_exit("Can't open input file");
-	if (dup2(src_file_fd, 0) == -1 || dup2(fds[1], 1) == -1)
+	if (dup2(src_file_fd, 0) == -1 | dup2(fds[1], 1) == -1)
 		ft_perror_and_exit("Can't turn STDIN to infile or STDOUT to pipes inp");
 	path_to_cmd1 = ft_get_path(argv[2], envp);
 	params_for_execve = ft_get_params(argv[2]);
