@@ -19,13 +19,15 @@ char	*ft_get_path(char *cmd_w_flags, char *envp[])
 	char	*path;
 	int		i;
 
-
 	cmd_name = ft_get_cmd_name(cmd_w_flags);
 	if (!cmd_name)
 		return (NULL);
 	directories = ft_get_directories(envp);
 	if (!directories)
+	{
+		free(cmd_name);
 		return (NULL);
+	}
 	i = 0;
 	while (directories[i])
 	{
@@ -41,4 +43,31 @@ char	*ft_get_path(char *cmd_w_flags, char *envp[])
 	free(directories);
 	free(cmd_name);
 	return (NULL);
+}
+
+char	*ft_get_cmd_name(const char *cmd_name_with_flags)
+{
+	char	*cmd_name;
+	int		i;
+	int		j;
+
+	j = 0;
+	while (cmd_name_with_flags[j] && cmd_name_with_flags[j] == ' ')
+		j++;
+	i = 0;
+	while (cmd_name_with_flags[j + i] && cmd_name_with_flags[j + i] != ' ')
+		i++;
+	if (i == 0)
+		return (NULL);
+	cmd_name = (char *)malloc(sizeof(char) * (i + 2));
+	if (!cmd_name)
+		return (NULL);
+	cmd_name[i + 1] = '\0';
+	while (i != 0)
+	{
+		cmd_name[i] = cmd_name_with_flags[j + i - 1];
+		i--;
+	}
+	cmd_name[i] = '/';
+	return (cmd_name);
 }

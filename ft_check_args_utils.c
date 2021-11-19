@@ -1,16 +1,16 @@
 #include "pipex.h"
 
-void	ft_check_args(int argc, char **argv)
+void	ft_check_args(int argc, char *argv[], char *envp[])
 {
 	int	i;
 
 	if (argc != 5)
-		ft_pmessage_and_exit("Wrong arguments count\n", 2);
+		ft_pmessage_and_exit("Wrong arguments count\n");
 	if (access(argv[1], R_OK) == -1)
 		ft_perror_and_exit("Program exit with message");
 	i = 2;
 	while (i < argc)
-		ft_check_rights(argv[i++]);
+		ft_check_rights(argv[i++], envp);
 }
 
 void	ft_check_rights(char *arg, char *envp[])
@@ -25,21 +25,21 @@ void	ft_check_rights(char *arg, char *envp[])
 		free(path_to_check);
 		return ;
 	}
-	paths = ft_get_paths(envp);
+//	paths = ft_get_paths(envp);
 	if (!paths)
 		ft_pmessage_and_exit("command not found, exit");
-	i = 0;
-	while (paths[i])
-	{
-		path_to_check = ft_strjoin(paths[i++], arg);
-		if (access(path_to_check, X_OK) == 0)
-		{
-			free(path_to_check);
-			ft_free_array(paths);
-			return	;
-		}
-		free(path_to_check);
-	}
+//	i = 0;
+//	while (paths[i])
+//	{
+//		path_to_check = ft_strjoin(paths[i++], arg);
+//		if (access(path_to_check, X_OK) == 0)
+//		{
+//			free(path_to_check);
+//			ft_free_array(paths);
+//			return	;
+//		}
+//		free(path_to_check);
+//	}
 	free(paths);
 	ft_perror_and_exit("Program exit with message");
 }
