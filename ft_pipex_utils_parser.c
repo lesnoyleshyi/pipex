@@ -71,3 +71,11 @@ char	*ft_get_cmd_name(const char *cmd_name_with_flags)
 	cmd_name[i] = '/';
 	return (cmd_name);
 }
+
+char	**ft_get_params(char *cmd_name_with_flags)
+{
+	char	**params;
+
+	params = ft_split(cmd_name_with_flags, ' ');
+	return (params);
+}
