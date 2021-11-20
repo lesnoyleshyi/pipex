@@ -69,14 +69,8 @@ char	*ft_get_cmd_name(const char *cmd_name_with_flags)
 char	**ft_get_params(char *cmd_name_with_flags)
 {
 	char	**params;
-//	char	*fail_params[2];
 
 	params = ft_split(cmd_name_with_flags, ' ');
-//	if (!params)
-//	{
-//		params[0] = path_to_cmd;
-//		params[1] = NULL;
-//	}		//надо ещё вторым параметром передать path_to_cmd
 	return (params);
 }
 
@@ -86,15 +80,15 @@ void	ft_check_params(char *path_to_cmd, char *params_for_execve[])
 		ft_pmessage_and_exit("command not found\n");
 	if (!params_for_execve)
 	{
-		if (path_to_cmd1)
-			free(path_to_cmd1);
+		if (path_to_cmd)
+			free(path_to_cmd);
 		ft_pmessage_and_exit("error passing args to cmd or receiving dirs");
 	}
 }
 
 char	**ft_get_directories(char *envp[])
 {
-	int 	i;
+	int		i;
 	char	**paths;
 
 	i = 0;

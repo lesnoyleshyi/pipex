@@ -37,7 +37,7 @@ int	main(int argc, char *argv[], char *envp[])
 		ft_read_from_pipe_to_outfile(fds, argv, envp);
 	}
 	if (close(fds[1]) == -1 | close(fds[0]) == -1)
-		ft_perror_and_exit("Can't close one of pipes filedes");
+		ft_perror_and_exit("Can't close one of pipes file descriptors");
 	return (0);
 }
 
@@ -56,6 +56,7 @@ void	ft_write_to_pipe_from_infile(int *fds, char *argv[], char *envp[])
 		ft_perror_and_exit("Can't turn STDIN to infile or STDOUT to pipes inp");
 	path_to_cmd1 = ft_get_path(argv[2], envp);
 	params_for_execve = ft_get_params(argv[2]);
+	ft_check_params(path_to_cmd1, params_for_execve);
 	if (execve(path_to_cmd1, params_for_execve, envp) == -1)
 	{
 		free(path_to_cmd1);
@@ -65,7 +66,7 @@ void	ft_write_to_pipe_from_infile(int *fds, char *argv[], char *envp[])
 	free(path_to_cmd1);
 	ft_free_array(params_for_execve);
 	if (close(src_file_fd) == -1)
-		ft_perror_and_exit("Can't close source files");
+		ft_perror_and_exit("Can't close source file");
 	exit(EXIT_SUCCESS);
 }
 
@@ -80,12 +81,11 @@ void	ft_read_from_pipe_to_outfile(int *fds, char *argv[], char *envp[])
 	dst_file_fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (dst_file_fd == -1)
 		ft_perror_and_exit("Can't open or create output file");
-	if (dup2(fds[0], 0) == -1)
-		ft_perror_and_exit("Can't turn STDIN to pipes output");
-	if (dup2(dst_file_fd, 1) == -1)
-		ft_perror_and_exit("Can't turn STDOUT to output file");
+	if (dup2(fds[0], 0) == -1 | dup2(dst_file_fd, 1) == -1)
+		ft_perror_and_exit("Can't turn STDIN to pipe out or STDOUT to outfile");
 	path_to_cmd2 = ft_get_path(argv[3], envp);
 	params_for_execve = ft_get_params(argv[3]);
+	ft_check_params(path_to_cmd2, params_for_execve);
 	if (execve(path_to_cmd2, params_for_execve, envp) == -1)
 	{
 		free(path_to_cmd2);
@@ -94,4 +94,7 @@ void	ft_read_from_pipe_to_outfile(int *fds, char *argv[], char *envp[])
 	}
 	free(path_to_cmd2);
 	ft_free_array(params_for_execve);
+	if (close(dst_file_fd) == -1)
+		ft_perror_and_exit("Can't close output file");
+	exit(EXIT_SUCCESS);
 }

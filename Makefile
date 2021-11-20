@@ -14,11 +14,13 @@ NAME		=	pipex
 
 HEADER		=	pipex.h
 
-LIBFT_PATH	=	./libft
+LIB_PATH	=	./libft
 
 LIB_NAME	=	ft
 
-SRCS		=	pipex.c	ft_pipex_utils_parser.c	ft_check_args_utils.c
+LIBFT		=	${LIB_PATH}/$(addsuffix .a,$(addprefix lib, ${LIB_NAME}))
+
+SRCS		=	pipex.c	ft_pipex_utils_parser.c	ft_pipex_utils_errors.c
 
 OBJS		=	${SRCS:.c=.o}
 
@@ -29,21 +31,30 @@ CFLAGS		=	-Wall -Werror -Wextra
 %.o		:	%.c ${HEADER}
 			${CC} ${CFLAGS} -c $< -o $@
 
-${NAME}	:	mklib ${OBJS} ${HEADER}
-			${CC} ${CFLAGS} ${OBJS} -L${LIBFT_PATH} -l${LIB_NAME} -o ${NAME}
+.PHONY	:	all clean fclean re libft debug_pipex debug_execve_NULL
 
 all		:	${NAME}
 
-mklib	:
-			@${MAKE} -C ${LIBFT_PATH}
+${NAME}	:	${OBJS} ${LIBFT}
+			${CC} ${CFLAGS} ${OBJS} -L${LIB_PATH} -l${LIB_NAME} -o ${NAME}
+
+${LIBFT}:	libft ;
+
+libft	:
+			${MAKE} $(addsuffix .a,$(addprefix lib, ${LIB_NAME})) -C ${LIB_PATH}
 
 clean	:
 			rm -rf ${OBJS}
+			${MAKE} clean -C ${LIB_PATH}
 
 fclean	:	clean
 			rm -rf ${NAME}
-			@${MAKE} fclean -C ${LIBFT_PATH}
+			${MAKE} fclean -C ${LIB_PATH}
 
 re		:	fclean all
 
-.PHONY	:	all clean fclean re mklib
+debug_execve_NULL	:
+						${CC} ${CFLAGS} -g test_execv.c -o test_execv_null
+
+debug_pipex			:
+						${CC} ${CFLAGS} -g ${SRCS} -L${LIBFT_PATH} -l${LIB_NAME} -o pipex_debug
