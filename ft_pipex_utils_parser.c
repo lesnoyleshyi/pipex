@@ -20,14 +20,8 @@ char	*ft_get_path(char *cmd_w_flags, char *envp[])
 	int		i;
 
 	cmd_name = ft_get_cmd_name(cmd_w_flags);
-	if (!cmd_name)
-		return (NULL);
 	directories = ft_get_directories(envp);
-	if (!directories)
-	{
-		free(cmd_name);
-		return (NULL);
-	}
+	ft_check_params(cmd_name, directories);
 	i = 0;
 	while (directories[i])
 	{
@@ -40,7 +34,7 @@ char	*ft_get_path(char *cmd_w_flags, char *envp[])
 		}
 		free(path);
 	}
-	free(directories);
+	ft_free_array(directories);
 	free(cmd_name);
 	return (NULL);
 }
@@ -75,7 +69,43 @@ char	*ft_get_cmd_name(const char *cmd_name_with_flags)
 char	**ft_get_params(char *cmd_name_with_flags)
 {
 	char	**params;
+//	char	*fail_params[2];
 
 	params = ft_split(cmd_name_with_flags, ' ');
+//	if (!params)
+//	{
+//		params[0] = path_to_cmd;
+//		params[1] = NULL;
+//	}		//надо ещё вторым параметром передать path_to_cmd
 	return (params);
+}
+
+void	ft_check_params(char *path_to_cmd, char *params_for_execve[])
+{
+	if (!path_to_cmd)
+		ft_pmessage_and_exit("command not found\n");
+	if (!params_for_execve)
+	{
+		if (path_to_cmd1)
+			free(path_to_cmd1);
+		ft_pmessage_and_exit("error passing args to cmd or receiving dirs");
+	}
+}
+
+char	**ft_get_directories(char *envp[])
+{
+	int 	i;
+	char	**paths;
+
+	i = 0;
+	paths = NULL;
+	while (envp[i])
+	{
+		if (ft_strnstr(envp[i], "PATH=", 1000))
+		{
+			paths = ft_split((envp[i++]) + 5, ':');
+			break ;
+		}
+	}
+	return (paths);
 }
