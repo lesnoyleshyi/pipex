@@ -100,6 +100,8 @@ char	**ft_get_directories(char *envp[])
 			paths = ft_split((envp[i++]) + 5, ':');
 			break ;
 		}
+		else
+			i++;
 	}
 	return (paths);
 }
