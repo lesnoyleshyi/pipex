@@ -33,3 +33,21 @@ void	ft_free_array(char **array)
 		free(array[i++]);
 	free(array);
 }
+
+void	ft_pcmd_error_and_exit(char	*cmd_w_flags)
+{
+	ft_putstr_fd("pipex: command not found: ", 2);
+	write(2, cmd_w_flags, ft_strlen_sp(cmd_w_flags));
+	write(2, "\n", 2);
+	exit(EXIT_FAILURE);
+}
+
+int	ft_strlen_sp(const char *cmd_w_flags)
+{
+	int	i;
+
+	i = 0;
+	while (cmd_w_flags[i] && cmd_w_flags[i] != ' ')
+		i++;
+	return (i);
+}

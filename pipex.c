@@ -56,7 +56,7 @@ void	ft_write_to_pipe_from_infile(int *fds, char *argv[], char *envp[])
 		ft_perror_and_exit("Can't turn STDIN to infile or STDOUT to pipes inp");
 	path_to_cmd1 = ft_get_path(argv[2], envp);
 	params_for_execve = ft_get_params(argv[2]);
-	ft_check_params(path_to_cmd1, params_for_execve);
+	ft_check_params(path_to_cmd1, params_for_execve, argv[2]);
 	if (execve(path_to_cmd1, params_for_execve, envp) == -1)
 	{
 		free(path_to_cmd1);
@@ -85,7 +85,7 @@ void	ft_read_from_pipe_to_outfile(int *fds, char *argv[], char *envp[])
 		ft_perror_and_exit("Can't turn STDIN to pipe out or STDOUT to outfile");
 	path_to_cmd2 = ft_get_path(argv[3], envp);
 	params_for_execve = ft_get_params(argv[3]);
-	ft_check_params(path_to_cmd2, params_for_execve);
+	ft_check_params(path_to_cmd2, params_for_execve, argv[3]);
 	if (execve(path_to_cmd2, params_for_execve, envp) == -1)
 	{
 		free(path_to_cmd2);

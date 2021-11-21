@@ -21,7 +21,7 @@ char	*ft_get_path(char *cmd_w_flags, char *envp[])
 
 	cmd_name = ft_get_cmd_name(cmd_w_flags);
 	directories = ft_get_directories(envp);
-	ft_check_params(cmd_name, directories);
+	ft_check_params(cmd_name, directories, cmd_w_flags);
 	i = 0;
 	while (directories[i])
 	{
@@ -74,11 +74,11 @@ char	**ft_get_params(char *cmd_name_with_flags)
 	return (params);
 }
 
-void	ft_check_params(char *path_to_cmd, char *params_for_execve[])
+void	ft_check_params(char *path_to_cmd, char *execve_params[], char *cmd_fl)
 {
 	if (!path_to_cmd)
-		ft_pmessage_and_exit("command not found\n");
-	if (!params_for_execve)
+		ft_pcmd_error_and_exit(cmd_fl);
+	if (!execve_params)
 	{
 		if (path_to_cmd)
 			free(path_to_cmd);
